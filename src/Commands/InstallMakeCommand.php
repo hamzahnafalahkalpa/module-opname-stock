@@ -39,11 +39,6 @@ class InstallMakeCommand extends EnvironmentCommand
         ]);
         $this->info('✔️  Created migrations');
 
-        $migrations = $this->setMigrationBasePath(database_path('migrations'))->canMigrate();
-        $this->callSilent('migrate', ['--path' => $migrations]);
-
-        $this->info('✔️  App table migrated');
-
         $this->comment('hanafalah/module-opname-stock installed successfully.');
     }
 }
