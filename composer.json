@@ -12,10 +12,10 @@
         }
     ],
     "require": {
-        "hanafalah/laravel-support": "1.x",
-        "hanafalah/module-warehouse": "1.x",
-        "hanafalah/module-transaction": "1.x",
-        "hanafalah/module-item": "1.x"
+        "hanafalah/laravel-support": "1.x-dev as 1.0",
+        "hanafalah/module-warehouse": "1.x-dev as 1.0",
+        "hanafalah/module-transaction": "1.x-dev as 1.0",
+        "hanafalah/module-item": "1.x-dev as 1.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": false
