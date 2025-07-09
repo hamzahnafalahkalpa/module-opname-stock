@@ -70,7 +70,7 @@ class OpnameStock extends BaseModel
     )->where('reference_type', $this->getMorphClass());
   }
 
-  public static array $activityList = [
+  public array $activityList = [
     Activity::OPNAME_STOCK->value . '_' . ActivityStatus::OPNAME_STOCK_CREATED->value    => ['flag' => 'OPNAME_STOCK_CREATED', 'message' => 'Opname stock created'],
     Activity::OPNAME_STOCK->value . '_' . ActivityStatus::OPNAME_STOCK_REPORTED->value   => ['flag' => 'OPNAME_STOCK_REPORTED', 'message' => 'Opname stock reported'],
     Activity::OPNAME_STOCK->value . '_' . ActivityStatus::OPNAME_STOCK_CANCELLED->value  => ['flag' => 'OPNAME_STOCK_CANCELLED', 'message' => 'Opname stock cancelled'],
