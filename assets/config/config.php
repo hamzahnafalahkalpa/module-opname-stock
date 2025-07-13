@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use Hanafalah\ModuleOpnameStock\{
     Models as ModuleOpname,
     Commands as ModuleOpnameCommand
@@ -8,6 +7,21 @@ use Hanafalah\ModuleOpnameStock\{
 use Hanafalah\ModuleWarehouse\Models\Building\Room;
 
 return [
+    'namespace' => 'Hanafalah\\ModuleOpnameStock',
+    'app' => [
+        'contracts' => [
+            //ADD YOUR CONTRACTS HERE
+        ]
+    ],
+    'libs' => [
+        'model' => 'Models',
+        'contract' => 'Contracts',
+        'schema' => 'Schemas',
+        'database' => 'Database',
+        'data' => 'Data',
+        'resource' => 'Resources',
+        'migration' => '../assets/database/migrations'
+    ],
     'commands' => [
         ModuleOpnameCommand\InstallMakeCommand::class
     ],
@@ -17,7 +31,6 @@ return [
     ],
     'database' => [
         'models' => [
-            'OpnameStock' => ModuleOpname\OpnameStock::class,
         ]
     ],
     'author'    => \App\Models\User::class,
