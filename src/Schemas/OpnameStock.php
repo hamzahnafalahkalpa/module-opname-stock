@@ -26,8 +26,8 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
     protected array $__guard   = [];
     protected array $__add     = [];
     protected string $__entity = 'OpnameStock';
-    public static $opname_stock_model;
-    public static $opname_item_model;
+    public $opname_stock_model;
+    public $opname_item_model;
 
     protected array $__resources = [
         'show' => ShowOpnameStock::class,
@@ -37,7 +37,7 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
 
     public function getOpnameStock(): mixed
     {
-        return static::$opname_stock_model;
+        return $this->opname_stock_model;
     }
 
     protected function showUsingRelation()
@@ -126,7 +126,7 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
             }
         }
 
-        return static::$opname_stock_model = $opname_stock;
+        return $this->opname_stock_model = $opname_stock;
     }
 
     public function prepareStoreOpnameItems(mixed $attributes = null): Model
@@ -145,7 +145,7 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
         }
         $opname_item = $this->schemaContract('card_stock')
             ->prepareStoreCardStock($attributes);
-        return static::$opname_item_model = $opname_item;
+        return $this->opname_item_model = $opname_item;
     }
 
     public function storeOpnameStock(): array
@@ -168,7 +168,7 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
         } else {
             $model->load($this->showUsingRelation());
         }
-        return static::$opname_stock_model = $model;
+        return $this->opname_stock_model = $model;
     }
 
     public function showOpnameStock(?Model $model = null): array
@@ -223,7 +223,7 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
         $attributes ??= request()->all();
         if (!isset($attributes['id'])) throw new \Exception('No id provided', 422);
         $opname = $this->OpnameStockModel()->findOrFail($attributes['id']);
-        return static::$opname_stock_model = $this->prepareMainReportOpname($opname);
+        return $this->opname_stock_model = $this->prepareMainReportOpname($opname);
     }
 
     public function reportOpnameStock(): array
