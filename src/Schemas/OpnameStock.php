@@ -134,8 +134,8 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
         $attributes ??= request()->all();
 
         if (!isset($attributes['transaction_id'])) {
-            if (!isset(static::$opname_stock_model)) {
-                $opanem_stock = static::$opname_stock_model;
+            if (!isset($this->opname_stock_model)) {
+                $opanem_stock = $this->opname_stock_model;
             } else {
                 $id = $attributes['opanem_stock_id'] ?? null;
                 if (!isset($id)) throw new \Exception('No opname stock id provided', 422);
