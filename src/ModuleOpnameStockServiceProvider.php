@@ -17,15 +17,7 @@ class ModuleOpnameStockServiceProvider extends BaseServiceProvider
     {
         $this->registerMainClass(ModuleOpnameStock::class)
             ->registerCommandService(Providers\CommandServiceProvider::class)
-            ->registers([
-                '*',
-                'Services' => function () {
-                    $this->binds([
-                        Contracts\ModuleOpnameStock::class => ModuleOpnameStock::class,
-                        Contracts\OpnameStock::class => Schemas\OpnameStock::class
-                    ]);
-                }
-            ]);
+            ->registers(['*']);
     }
 
     /**

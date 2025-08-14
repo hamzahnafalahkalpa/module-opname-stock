@@ -38,37 +38,28 @@ class OpnameStock extends BaseModel
     });
   }
 
-  public function author()
-  {
-    return $this->morphTo();
-  }
-  public function warehouse()
-  {
-    return $this->morphTo();
-  }
-  public function cardStock()
-  {
-    return $this->hasOneThroughModel(
-      'CardStock',
-      'Transaction',
-      'reference_id',
-      $this->TransactionModel()->getForeignKey(),
-      $this->getKeyName(),
-      $this->TransactionModel()->getKeyName()
-    )->where('reference_type', $this->getMorphClass());
-  }
+    protected function showUsingRelation(){
+        return [
+            'cardStocks' => function ($query) {
+                $query->with([
+                    'item',
+                    'stockMovements' => function ($query) {
+                        $query->with([
+                            'reference',
+                            'itemStock.funding',
+                            'childs.batchMovements.batch',
+                            'batchMovements.batch'
+                        ]);
+                    }
+                ]);
+            }
+        ];
+    }
 
-  public function cardStocks()
-  {
-    return $this->hasManyThroughModel(
-      'CardStock',
-      'Transaction',
-      'reference_id',
-      $this->TransactionModel()->getForeignKey(),
-      $this->getKeyName(),
-      $this->TransactionModel()->getKeyName()
-    )->where('reference_type', $this->getMorphClass());
-  }
+  public function author(){return $this->morphTo();}
+  public function warehouse(){return $this->morphTo();}
+  public function cardStock(){return $this->morphOneModel('CardStock','reference');}
+  public function cardStocks(){return $this->morphManyModel('CardStock','reference');}
 
   public array $activityList = [
     Activity::OPNAME_STOCK->value . '_' . ActivityStatus::OPNAME_STOCK_CREATED->value    => ['flag' => 'OPNAME_STOCK_CREATED', 'message' => 'Opname stock created'],
