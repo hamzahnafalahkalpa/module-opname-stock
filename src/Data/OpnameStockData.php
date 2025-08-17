@@ -107,15 +107,33 @@ class OpnameStockData extends Data implements DataOpnameStockData
                         'funding_id'     => $item_stock['funding_id'],
                         'reference_id'   => $attributes['warehouse_id'],
                         'reference_type' => $attributes['warehouse_type'],
+                        'item_stock_id'  => $item_stock['id'] ?? null,
                     ];
+                    if (!isset($stock_movement['item_stock_id'])) {
+                        $stock_movement['item_stock'] = [
+                            'subject_type'     => 'Item',
+                            'subject_id'       => $item['id'],
+                            'warehouse_type'   => $attributes['warehouse_type'],
+                            'warehouse_id'     => $attributes['warehouse_id'],
+                            'funding_id'       => $item_stock['funding_id'] ?? null
+                        ];
+                    }
                     if (isset($is_using_batch) && $is_using_batch){
                         if (!isset($item_stock['stock_batches'])) throw new \Exception('No stock batches provided', 422);
                         $stock_movement['batch_movements'] = [];
                         foreach ($item_stock['stock_batches'] as $stock_batch) {
-                            $stock_movement['batch_movements'][] = [
+                            $batch_movement = [
+                                'stock_batch_id' => $stock_batch['id'] ?? null,
                                 'batch' => $stock_batch['batch'],
                                 'qty'   => $stock_batch['qty'] ?? 0,
                             ];
+                            if (!isset($batch_movement['stock_batch_id'])) {
+                                $batch_movement['stock_batch'] = [
+                                    'stock_id' => null,
+                                    'batch_id' => null
+                                ];
+                            }
+                            $stock_movement['batch_movements'][] = $batch_movement;
                         }
                     }else{
                         $stock_movement['qty'] ??= 0;

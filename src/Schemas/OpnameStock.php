@@ -29,6 +29,7 @@ class OpnameStock extends PackageManagement implements ContractsOpnameStock
             'warehouse_id'   => $opname_stock_dto->warehouse_id,
             'status'         => $opname_stock_dto->status ?? Status::DRAFT->value
         ]);
+
         $opname_stock->pushActivity(Activity::OPNAME_STOCK->value, ActivityStatus::OPNAME_STOCK_CREATED->value);
         $transaction = $opname_stock->transaction;
         $opname_stock_dto->props['prop_transaction'] = $transaction->toViewApiOnlies('id','reference_type','reference_id','transaction_code');
