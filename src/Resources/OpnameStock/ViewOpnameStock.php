@@ -24,7 +24,7 @@ class ViewOpnameStock extends ApiResource
             'opname_code' => $this->procurement_code,
             'transaction' => $this->relationValidation('transaction', function () {
                 return $this->transaction->toViewApi()->resolve();
-            }),
+            },$this->prop_transaction),
             'reported_at' => $this->reported_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Hanafalah\LaravelHasProps\Concerns\HasProps;
 use Hanafalah\LaravelSupport\Concerns\Support\HasActivity;
 use Hanafalah\LaravelSupport\Models\BaseModel;
+use Hanafalah\ModuleOpnameStock\Resources\OpnameStock\{ViewOpnameStock,ShowOpnameStock};
 use Hanafalah\ModuleTransaction\Concerns\HasTransaction;
 
 class OpnameStock extends BaseModel
@@ -28,8 +29,7 @@ class OpnameStock extends BaseModel
     'reported_at'
   ];
 
-  protected static function booted(): void
-  {
+  protected static function booted(): void{
     parent::booted();
     static::creating(function ($query) {
       if (!isset($query->opname_code)) {
@@ -38,23 +38,25 @@ class OpnameStock extends BaseModel
     });
   }
 
-    protected function showUsingRelation(){
-        return [
-            'cardStocks' => function ($query) {
-                $query->with([
-                    'item',
-                    'stockMovements' => function ($query) {
-                        $query->with([
-                            'reference',
-                            'itemStock.funding',
-                            'childs.batchMovements.batch',
-                            'batchMovements.batch'
-                        ]);
-                    }
-                ]);
-            }
-        ];
-    }
+  public function showUsingRelation(){
+      return [
+          'cardStocks' => function ($query) {
+              $query->with([
+                  'stockMovements' => function ($query) {
+                      $query->with([
+                          'reference',
+                          'itemStock',
+                          'childs.batchMovements',
+                          'batchMovements'
+                      ]);
+                  }
+              ]);
+          }
+      ];
+  }
+
+  public function getViewResource(){return ViewOpnameStock::class;}
+  public function getShowResource(){return ShowOpnameStock::class;}
 
   public function author(){return $this->morphTo();}
   public function warehouse(){return $this->morphTo();}

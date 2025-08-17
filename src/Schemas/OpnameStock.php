@@ -16,68 +16,60 @@ use Hanafalah\ModuleOpnameStock\Contracts\Schemas\OpnameStock as ContractsOpname
 class OpnameStock extends PackageManagement implements ContractsOpnameStock
 {
     protected string $__entity = 'OpnameStock';
+    protected mixed $__order_by_created_at = 'desc'; //asc, desc, false
     public $opname_stock_model;
 
     public function prepareStoreOpnameStock(OpnameStockData $opname_stock_dto): Model{
-        $warehouse = $this->getWarehouseById($attributes['warehouse_id']);
-        if (!isset($warehouse)) throw new \Exception("Warehouse not found");
-
-        if (isset($attributes['author_id'])) {
-            if (!isset($attributes['author_type'])) {
-                $attributes['author_type'] = $this->getWrehouseModel()->getMorphClass();
-            }
-        }
-
-        $opname_stock = $this->OpnameStockModel()->updateOrCreate([
-            'id' => $attributes['id'] ?? null
+        $opname_stock = $this->usingEntity()->updateOrCreate([
+            'id' => $opname_stock_dto->id ?? null
         ], [
-            'author_type'    => $attributes['author_type'] ?? null,
-            'author_id'      => $attributes['author_id'] ?? null,
-            'warehouse_type' => $warehouse->getMorphClass(),
-            'warehouse_id'   => $warehouse->getKey(),
-            'status'         => Status::DRAFT->value,
+            'author_type'    => $opname_stock_dto->author_type,
+            'author_id'      => $opname_stock_dto->author_id,
+            'warehouse_type' => $opname_stock_dto->warehouse_type,
+            'warehouse_id'   => $opname_stock_dto->warehouse_id,
+            'status'         => $opname_stock_dto->status ?? Status::DRAFT->value
         ]);
         $opname_stock->pushActivity(Activity::OPNAME_STOCK->value, ActivityStatus::OPNAME_STOCK_CREATED->value);
-        $opname_stock->record_all_item = $attributes['record_all_item'];
-        $opname_stock->save();
+        $transaction = $opname_stock->transaction;
+        $opname_stock_dto->props['prop_transaction'] = $transaction->toViewApiOnlies('id','reference_type','reference_id','transaction_code');
 
-        if (isset($attributes['card_stocks']) && count($attributes['card_stocks']) > 0) {
-            $card_stocks = $attributes['card_stocks'];
-            $transaction = $opname_stock->transaction;
+        if (isset($opname_stock_dto->card_stocks) && count($opname_stock_dto->card_stocks) > 0) {
+            $card_stocks = &$opname_stock_dto->card_stocks;
             foreach ($card_stocks as $card_stock) {
-                $card_stock['transaction_id'] = $transaction->getKey();
-                $card_stock['direction']      = $this->StockMovementModel()::OPNAME;
-                $card_stock['warehouse_id']   = $attributes['warehouse_id'];
-                $this->prepareStoreOpnameItems($card_stock);
+                $card_stock->transaction_id = $transaction->getKey();
+                $card_stock->reference_type = $opname_stock->getMorphClass();
+                $card_stock->reference_id   = $opname_stock->getKey();
+                $this->schemaContract('card_stock')->prepareStoreCardStock($card_stock);
             }
         }
-
+        $this->fillingProps($opname_stock, $opname_stock_dto->props);
+        $opname_stock->save();
         return $this->opname_stock_model = $opname_stock;
     }
 
-    public function prepareUpdateOpnameStock(PurchasingUpdateData $purchasing_dto): Model{
-        $model    = $this->usingEntity()->with('purchaseOrders')->findOrFail($purchasing_dto->id);
-        $approver = &$purchasing_dto->props->approval->props['approver'];
-        $approver = array_merge($model->approval['approver'],$approver);
-        $procurement = $model->procurement;
-        if (isset($purchasing_dto->props->props['status'])){
-            $procurement->status = $purchasing_dto->props->props['status'];
-        }
-        if (isset($purchasing_dto->reported_at)){
-            $procurement->reported_at  = $purchasing_dto->reported_at;
-            foreach ($model->purchaseOrders as $purchaseOrder) {
-                $po_procurement              = $purchaseOrder->procurement;
-                $po_procurement->reported_at = $purchasing_dto->reported_at;
-                $transaction = $purchaseOrder->procurement->transaction;
-                $transaction->journal_reported_at = $purchasing_dto->reported_at;
-                $transaction->save();
-            }
-        }
-        $procurement->save();
-        $this->fillingProps($model,$purchasing_dto->props);
-        $model->save();
-        return $this->purchasing_model = $model;
-    }
+    // public function prepareUpdateOpnameStock(PurchasingUpdateData $purchasing_dto): Model{
+    //     $model    = $this->usingEntity()->with('purchaseOrders')->findOrFail($purchasing_dto->id);
+    //     $approver = &$purchasing_dto->props->approval->props['approver'];
+    //     $approver = array_merge($model->approval['approver'],$approver);
+    //     $procurement = $model->procurement;
+    //     if (isset($purchasing_dto->props->props['status'])){
+    //         $procurement->status = $purchasing_dto->props->props['status'];
+    //     }
+    //     if (isset($purchasing_dto->reported_at)){
+    //         $procurement->reported_at  = $purchasing_dto->reported_at;
+    //         foreach ($model->purchaseOrders as $purchaseOrder) {
+    //             $po_procurement              = $purchaseOrder->procurement;
+    //             $po_procurement->reported_at = $purchasing_dto->reported_at;
+    //             $transaction = $purchaseOrder->procurement->transaction;
+    //             $transaction->journal_reported_at = $purchasing_dto->reported_at;
+    //             $transaction->save();
+    //         }
+    //     }
+    //     $procurement->save();
+    //     $this->fillingProps($model,$purchasing_dto->props);
+    //     $model->save();
+    //     return $this->opname_stock_model = $model;
+    // }
 
     // public function prepareMainReportOpname(Model $opname): Model{
     //     if (isset($opname->reported_at)) throw new \Exception('Opname already reported', 422);

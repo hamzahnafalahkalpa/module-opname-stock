@@ -33,6 +33,6 @@ return [
         'models' => [
         ]
     ],
-    'author'    => \App\Models\User::class,
-    'warehouse' => Room::class
+    'author'    => 'User',
+    'warehouse' => 'Room'
 ];
