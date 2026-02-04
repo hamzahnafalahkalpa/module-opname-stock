@@ -112,7 +112,7 @@ class OpnameStockData extends Data implements DataOpnameStockData
                     if (!isset($stock_movement['item_stock_id'])) {
                         $stock_movement['item_stock'] = [
                             'subject_type'     => 'Item',
-                            'subject_id'       => $item['id'],
+                            'subject_id'       => (string) $item['id'],
                             'warehouse_type'   => $attributes['warehouse_type'],
                             'warehouse_id'     => $attributes['warehouse_id'],
                             'funding_id'       => $item_stock['funding_id'] ?? null
